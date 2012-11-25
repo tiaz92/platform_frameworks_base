@@ -2525,11 +2525,6 @@ public final class Settings {
         public static final String SIP_ASK_ME_EACH_TIME = "SIP_ASK_ME_EACH_TIME";
 
         /**
-         * Torch state (flashlight)
-         * @hide
-         */
-        public static final String TORCH_STATE = "torch_state";
-        /**
          * Pointer speed setting.
          * This is an integer value in a range between -7 and +7, so there are 15 possible values.
          *   -7 = slowest
@@ -2538,6 +2533,87 @@ public final class Settings {
          * @hide
          */
         public static final String POINTER_SPEED = "pointer_speed";
+
+        /**
+         * Quick Settings Panel Dynamic Tiles
+         *
+         * @hide
+         */
+        public static final String QS_DYNAMIC_ALARM = "qs_dyanmic_alarm";
+
+        /**
+         * Quick Settings Panel Dynamic Tiles
+         *
+         * @hide
+         */
+        public static final String QS_DYNAMIC_BUGREPORT = "qs_dyanmic_bugreport";
+
+        /**
+         * Quick Settings Panel Dynamic Tiles
+         *
+         * @hide
+         */
+        public static final String QS_DYNAMIC_IME = "qs_dyanmic_ime";
+
+        /**
+         * Quick Settings Panel Dynamic Tiles
+         *
+         * @hide
+         */
+        public static final String QS_DYNAMIC_USBTETHER = "qs_dyanmic_usbtether";
+
+        /**
+         * Quick Settings Panel Dynamic Tiles
+         *
+         * @hide
+         */
+        public static final String QS_DYNAMIC_WIFI = "qs_dyanmic_wifi";
+
+
+        /**
+         * Quick Settings Panel Tiles to Use
+         *
+         * @hide
+         */
+        public static final String QUICK_SETTINGS_TILES = "quick_settings_tiles";
+
+        /**
+         * Quick Settings Quick Pulldown
+         *
+         * @hide
+         */
+        public static final String QS_QUICK_PULLDOWN = "qs_quick_pulldown";
+
+        /**
+         * Quick Settings Collapse Pane
+         *
+         * @hide
+         */
+        public static final String QS_COLLAPSE_PANEL = "qs_collapse_panel";
+
+        /**
+        * Notification Power Widget - Custom Network Mode
+        * @hide
+        */
+        public static final String EXPANDED_NETWORK_MODE = "expanded_network_mode";
+
+       /**
+        * Notification Power Widget - Custom Screen Timeout
+        * @hide
+        */
+        public static final String EXPANDED_SCREENTIMEOUT_MODE = "expanded_screentimeout_mode";
+
+        /**
+        * Notification Power Widget - Custom Ring Mode
+        * @hide
+        */
+        public static final String EXPANDED_RING_MODE = "expanded_ring_mode";
+
+        /**
+        * Notification Power Widget - Custom Torch Mode
+        * @hide
+        */
+        public static final String EXPANDED_FLASH_MODE = "expanded_flash_mode";
 
         /**
          * I am the lolrus.
@@ -2667,6 +2743,12 @@ public final class Settings {
        public static final String STATUS_BAR_BRIGHTNESS_CONTROL = "status_bar_brightness_control";
 
         /**
+         * Whether to show the IME switcher in the status bar
+         * @hide
+         */
+        public static final String STATUS_BAR_IME_SWITCHER = "status_bar_ime_switcher";
+
+        /**
          * Whether the power menu reboot menu is enabled
          * @hide
          */
@@ -2725,6 +2807,40 @@ public final class Settings {
          * @hide
          */
         public static final String NAVIGATION_BAR_HEIGHT = "navigation_bar_height";
+
+        /**
+         * Quick Settings Quick access ribbon
+         *
+         * @hide
+         */
+        public static final String QS_QUICK_ACCESS = "qs_quick_access";
+
+        /**
+         * Quick Settings Quick access ribbon - linked layout
+         *
+         * @hide
+         */
+        public static final String QS_QUICK_ACCESS_LINKED = "qs_quick_access_linked";
+
+        /**
+         * Quick Settings Ribbon Tiles to Use
+         *
+         * @hide
+         */
+        public static final String QUICK_SETTINGS_RIBBON_TILES = "quick_settings_ribbon_tiles";
+
+        /**
+         * Whether to collapse the notification area after dismissing the last notification
+         * @hide
+         */
+        public static final String STATUS_BAR_COLLAPSE_ON_DISMISS = "status_bar_collapse_on_dismiss";
+
+        /** @hide */
+        public static final int STATUS_BAR_COLLAPSE_NEVER = 0;
+        /** @hide */
+        public static final int STATUS_BAR_COLLAPSE_IF_EMPTIED = 1;
+        /** @hide */
+        public static final int STATUS_BAR_COLLAPSE_IF_NO_CLEARABLE = 2;
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
@@ -4316,6 +4432,12 @@ public final class Settings {
         @Deprecated
         public static final String WIFI_MOBILE_DATA_TRANSITION_WAKELOCK_TIMEOUT_MS =
                 Global.WIFI_MOBILE_DATA_TRANSITION_WAKELOCK_TIMEOUT_MS;
+
+       /**
+         * Whether the Wimax should be on.  Only the WiMAX service should touch this.
+         * @hide
+         */
+        public static final String WIMAX_ON = "wimax_on";
 
         /**
          * Whether background data usage is allowed.

@@ -1294,4 +1294,10 @@
         <item>333</item>
         <item>353</item>
     </string-array>
+
+    <!-- Setting to false will disable CM's IME switcher implementation for tablets -->
+    <bool name="config_show_cmIMESwitcher">true</bool>
+
+    <!-- Device supports LED flashlight -->
+    <bool name="config_enableTorch">false</bool>
 </resources>
