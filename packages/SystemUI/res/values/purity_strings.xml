@@ -86,4 +86,7 @@
     <string name="navbar_menu_conditional_button">Menu (autoHide) button</string>
     <string name="navbar_menu_always_button">Menu (alwaysShow) button</string>
     <string name="navbar_menu_big_button">Menu button</string>
+
+    <!--ScreenShot Trash-->
+    <string name="screenshot_notification_delete">Delete</string>
 </resources>
