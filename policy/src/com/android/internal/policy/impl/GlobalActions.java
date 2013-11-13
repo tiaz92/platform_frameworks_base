@@ -27,6 +27,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -103,6 +104,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
     private Action mSilentModeAction;
     private ToggleAction mAirplaneModeOn;
+    private ToggleAction mGlobalImmersiveModeOn;
 
     private MyAdapter mAdapter;
 
@@ -201,6 +203,28 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         } else {
             mSilentModeAction = new SilentModeTriStateAction(mContext, mAudioManager, mHandler);
         }
+
+        mGlobalImmersiveModeOn = new ToggleAction(
+                R.drawable.ic_lock_immersive_mode_on,
+                R.drawable.ic_lock_immersive_mode_off,
+                R.string.global_actions_toggle_global_immersive_mode,
+                R.string.global_actions_global_immersive_mode_on_status,
+                R.string.global_actions_global_immersive_mode_off_status) {
+
+            void onToggle(boolean on) {
+                changeExpandDesktopModeSystemSetting(on);
+            }
+
+            public boolean showDuringKeyguard() {
+                return false;
+            }
+
+            public boolean showBeforeProvisioning() {
+                return false;
+            }
+        };
+        onExpandDesktopModeChanged();
+
         mAirplaneModeOn = new ToggleAction(
                 R.drawable.ic_lock_airplane_mode,
                 R.drawable.ic_lock_airplane_mode_off,
@@ -244,6 +268,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         };
         onAirplaneModeChanged();
 
+        final ContentResolver cr = mContext.getContentResolver();
         mItems = new ArrayList<Action>();
 
         // first: power off
@@ -268,8 +293,9 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
         // next: reboot
         // only shown if enabled, enabled by default
-        if (Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.POWER_MENU_REBOOT_ENABLED, 1) == 1) {
+        boolean showReboot = Settings.System.getIntForUser(cr,
+                Settings.System.POWER_MENU_REBOOT_ENABLED, 1, UserHandle.USER_CURRENT) == 1;
+        if (showReboot) {
             mItems.add(
                 new SinglePressAction(R.drawable.ic_lock_reboot, R.string.global_action_reboot) {
                     public void onPress() {
@@ -293,8 +319,9 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
         // next: screenshot
         // only shown if enabled, disabled by default
-        if (Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.POWER_MENU_SCREENSHOT_ENABLED, 0) == 1) {
+        boolean showScreenshot = Settings.System.getIntForUser(cr,
+                Settings.System.POWER_MENU_SCREENSHOT_ENABLED, 0, UserHandle.USER_CURRENT) == 1;
+        if (showScreenshot) {
             mItems.add(
                 new SinglePressAction(R.drawable.ic_lock_screenshot, R.string.global_action_screenshot) {
                     public void onPress() {
@@ -311,15 +338,29 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 });
         }
 
+        // next: global immersive mode toggle
+        // only shown if enabled and global immersive mode is enabled, disabled by default
+        boolean showGlobalImmersiveMode =
+                  Settings.System.getIntForUser(cr,
+                        Settings.System.GLOBAL_IMMERSIVE_MODE_STYLE, 0, UserHandle.USER_CURRENT) != 0
+                  && Settings.System.getIntForUser(cr,
+                        Settings.System.POWER_MENU_GLOBAL_IMMERSIVE_MODE_ENABLED, 0, UserHandle.USER_CURRENT) == 1;
+  
+        if (showGlobalImmersiveMode) {
+            mItems.add(mGlobalImmersiveModeOn);
+         }
+
         // next: airplane mode
-        if (Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.POWER_MENU_AIRPLANE_ENABLED, 1) == 1) {
+        boolean showAirplaneMode = Settings.System.getIntForUser(cr,
+                Settings.System.POWER_MENU_AIRPLANE_ENABLED, 1, UserHandle.USER_CURRENT) == 1;
+        if (showAirplaneMode) {
             mItems.add(mAirplaneModeOn);
         }
 
         // next: bug report, if enabled
-        if (Settings.Global.getInt(mContext.getContentResolver(),
-                Settings.Global.BUGREPORT_IN_POWER_MENU, 0) != 0 && isCurrentUserOwner()) {
+        boolean showBugReport = Settings.Secure.getIntForUser(cr,
+                Settings.Secure.BUGREPORT_IN_POWER_MENU, 0, UserHandle.USER_CURRENT) != 0;
+        if (showBugReport) {
             mItems.add(
                 new SinglePressAction(com.android.internal.R.drawable.stat_sys_adb,
                         R.string.global_action_bug_report) {
@@ -374,7 +415,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         // last: silent mode
         if ((Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.POWER_MENU_SILENT_ENABLED, 1) == 1) &&
-                (SHOW_SILENT_TOGGLE)) {
+                (mShowSilentToggle)) {
             mItems.add(mSilentModeAction);
         }
 
@@ -529,7 +570,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 @Override
                 public void onServiceDisconnected(ComponentName name) {}
             };
-            if (mContext.bindService(intent, conn, Context.BIND_AUTO_CREATE, UserHandle.USER_CURRENT)) {
+            if (mContext.bindService(intent, conn, Context.BIND_AUTO_CREATE)) {
                 mScreenshotConnection = conn;
                 mHandler.postDelayed(mScreenshotTimeout, 10000);
             }
@@ -1049,6 +1090,14 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         mAirplaneModeOn.updateState(mAirplaneState);
     }
 
+    private void onExpandDesktopModeChanged() {
+        boolean expandDesktopModeOn = Settings.System.getIntForUser(
+                mContext.getContentResolver(),
+                Settings.System.GLOBAL_IMMERSIVE_MODE_STATE,
+                0, UserHandle.USER_CURRENT) == 1;
+        mGlobalImmersiveModeOn.updateState(expandDesktopModeOn ? ToggleAction.State.On : ToggleAction.State.Off);
+    }
+
     /**
      * Change the airplane mode system setting
      */
@@ -1064,6 +1113,16 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         if (!mHasTelephony) {
             mAirplaneState = on ? ToggleAction.State.On : ToggleAction.State.Off;
         }
+    }
+
+    /**
+     * Change the expand desktop mode system setting
+     */
+    private void changeExpandDesktopModeSystemSetting(boolean on) {
+        Settings.System.putIntForUser(
+                mContext.getContentResolver(),
+                Settings.System.GLOBAL_IMMERSIVE_MODE_STATE,
+                on ? 1 : 0, UserHandle.USER_CURRENT);
     }
 
     private static final class GlobalActionsDialog extends Dialog implements DialogInterface {
