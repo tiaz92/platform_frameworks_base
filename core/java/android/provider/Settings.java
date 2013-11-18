@@ -2617,6 +2617,12 @@ public final class Settings {
         public static final String VOLUME_MUSIC_CONTROLS = "volume_music_controls";
 
         /**
+         * Whether to prevent loud volume levels when headset is first plugged in.
+         * @hide
+         */
+        public static final String SAFE_HEADSET_VOLUME = "safe_headset_volume";
+
+        /**
          * Display style of the status bar battery information
          * default: 0
          * @hide
