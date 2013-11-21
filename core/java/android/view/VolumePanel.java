@@ -38,6 +38,7 @@ import android.media.VolumeController;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
+import android.os.RemoteException;
 import android.os.UserHandle;
 import android.os.Vibrator;
 import android.provider.Settings;
@@ -346,20 +347,18 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener, Vie
         mVoiceCapable = context.getResources().getBoolean(R.bool.config_voice_capable);
 
         // Get the user's preferences
-        mVolumeLinkNotification = Settings.System.getIntForUser(mContext.getContentResolver(),
-                Settings.System.VOLUME_LINK_NOTIFICATION, 1,
-                UserHandle.USER_CURRENT) == 1;
-        int chosenStyle = Settings.System.getIntForUser(context.getContentResolver(),
-                Settings.System.MODE_VOLUME_OVERLAY, VOLUME_OVERLAY_EXPANDABLE,
-                UserHandle.USER_CURRENT);
+        mVolumeLinkNotification = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.VOLUME_LINK_NOTIFICATION, 1) == 1;
+        final int chosenStyle = Settings.System.getInt(context.getContentResolver(),
+                Settings.System.MODE_VOLUME_OVERLAY, VOLUME_OVERLAY_EXPANDABLE);
         changeOverlayStyle(chosenStyle);
 
         context.getContentResolver().registerContentObserver(
                 Settings.System.getUriFor(Settings.System.VOLUME_LINK_NOTIFICATION), false,
-                mSettingsObserver, UserHandle.USER_ALL);
+                mSettingsObserver);
         context.getContentResolver().registerContentObserver(
                 Settings.System.getUriFor(Settings.System.MODE_VOLUME_OVERLAY), false,
-                mSettingsObserver, UserHandle.USER_ALL);
+                mSettingsObserver);
 
         boolean masterVolumeKeySounds = mContext.getResources().getBoolean(
                 com.android.internal.R.bool.config_useVolumeKeySounds);
@@ -370,7 +369,28 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener, Vie
         listenToRingerMode();
     }
 
-    private void changeOverlayStyle(int newStyle) {
+    public void setLayoutDirection(int layoutDirection) {
+        mPanel.setLayoutDirection(layoutDirection);
+        updateStates();
+    }
+
+    private void listenToRingerMode() {
+        final IntentFilter filter = new IntentFilter();
+        filter.addAction(AudioManager.RINGER_MODE_CHANGED_ACTION);
+        mContext.registerReceiver(new BroadcastReceiver() {
+
+            public void onReceive(Context context, Intent intent) {
+                final String action = intent.getAction();
+
+                if (AudioManager.RINGER_MODE_CHANGED_ACTION.equals(action)) {
+                    removeMessages(MSG_RINGER_MODE_CHANGED);
+                    sendMessage(obtainMessage(MSG_RINGER_MODE_CHANGED));
+                }
+            }
+        }, filter);
+    }
+
+   private void changeOverlayStyle(int newStyle) {
         Log.i("VolumePanel", "changeOverlayStyle : " + newStyle);
         // Don't change to the same style
         if (newStyle == mCurrentOverlayStyle) return;
@@ -404,37 +424,6 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener, Vie
         }
     }
 
-    public void setLayoutDirection(int layoutDirection) {
-        mPanel.setLayoutDirection(layoutDirection);
-        updateStates();
-    }
-
-    private void listenToRingerMode() {
-        final IntentFilter filter = new IntentFilter();
-        filter.addAction(AudioManager.RINGER_MODE_CHANGED_ACTION);
-        mContext.registerReceiver(new BroadcastReceiver() {
-
-            public void onReceive(Context context, Intent intent) {
-                final String action = intent.getAction();
-
-                if (AudioManager.RINGER_MODE_CHANGED_ACTION.equals(action)) {
-                    removeMessages(MSG_RINGER_MODE_CHANGED);
-                    sendMessage(obtainMessage(MSG_RINGER_MODE_CHANGED));
-                }
-            }
-        }, filter);
-    }
-
-    private boolean isMuted(int streamType) {
-        if (streamType == STREAM_MASTER) {
-            return mAudioManager.isMasterMute();
-        } else if (streamType == AudioService.STREAM_REMOTE_MUSIC) {
-            return (mAudioService.getRemoteStreamVolume() <= 0);
-        } else {
-            return mAudioManager.isStreamMute(streamType);
-        }
-    }
-
     private int getStreamMaxVolume(int streamType) {
         if (streamType == STREAM_MASTER) {
             return mAudioManager.getMasterMaxVolume();
@@ -462,6 +451,16 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener, Vie
             mAudioService.setRemoteStreamVolume(index);
         } else {
             mAudioManager.setStreamVolume(streamType, index, flags);
+        }
+    }
+
+    private boolean isMuted(int streamType) {
+        if (streamType == STREAM_MASTER) {
+            return mAudioManager.isMasterMute();
+        } else if (streamType == AudioService.STREAM_REMOTE_MUSIC) {
+            return (mAudioService.getRemoteStreamVolume() <= 0);
+        } else {
+            return mAudioManager.isStreamMute(streamType);
         }
     }
 
@@ -1120,8 +1119,7 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener, Vie
         sendMessage(obtainMessage(MSG_TIMEOUT));
     }
 
-    public void onProgressChanged(SeekBar seekBar, int progress,
-            boolean fromUser) {
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         final Object tag = seekBar.getTag();
         if (fromUser && tag instanceof StreamControl) {
             StreamControl sc = (StreamControl) tag;
@@ -1154,9 +1152,7 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener, Vie
             expand();
         } else if (v instanceof ImageView) {
             Intent volumeSettings = new Intent(android.provider.Settings.ACTION_SOUND_SETTINGS);
-            volumeSettings.setFlags(
-                Intent.FLAG_ACTIVITY_NEW_TASK
-                | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+            volumeSettings.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
             forceTimeout();
             mContext.startActivity(volumeSettings);
             return;
