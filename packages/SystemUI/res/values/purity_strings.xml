@@ -31,12 +31,6 @@
     <string name="accessibility_quick_settings_ringer">Sound <xliff:g id="state" example="Off">%s</xliff:g>.</string>
     <string name="accessibility_quick_settings_vibration">Vibration <xliff:g id="state" example="Off">%s</xliff:g>.</string>
 
-    <string name="bean_dream_settings_cid_title">Use Cid\'s head</string>
-    <string name="bean_dream_settings_cid_summary">Use Cid\'s head instead of jellybeans inside the dream</string>
-
-    <!-- QuickSettings: Profile [CHAR LIMIT=NONE] -->
-    <string name="quick_settings_profile_label">Profile</string>
-
     <!-- Power widget -->
     <string name="powerwidget_screen_timeout_toast">Screen timeout set to: %1$d %2$s</string>
 
@@ -73,12 +67,6 @@
     <string name="quick_settings_lte_off">LTE off</string>
     <string name="quick_settings_volume">Volume</string>
     <string name="quick_settings_camera_label">Camera</string>
-    <string name="quick_settings_network_adb_disabled_label">Disabled</string>
-    <string name="quick_settings_network_adb_enabled_label">Enabled</string>
-
-    <!-- Immersive mode strings break the rules a bit - the icon identifies the feature, the string indicates current state -->
-    <string name="quick_settings_immersive_mode">Expanded</string>
-    <string name="quick_settings_immersive_mode_off">Normal</string>
 
     <!-- Camera tile toasts -->
     <string name="quick_settings_camera_error_connect">Can\'t connect to camera</string>
