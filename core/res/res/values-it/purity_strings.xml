@@ -19,6 +19,7 @@
     <string name="global_actions_expanded_desktop_mode_on_status">Attivato</string>
     <string name="global_actions_expanded_desktop_mode_off_status">Disattivato</string>
     <string name="reboot_reboot">Riavvia</string>
+    <string name="global_action_reboot">Riavvia</string>
     <string name="reboot_recovery">Recovery</string>
     <string name="reboot_bootloader">Bootloader</string>
     <string name="reboot_bootmenu">Bootmenu</string>
