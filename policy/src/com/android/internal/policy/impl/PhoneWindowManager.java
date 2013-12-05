@@ -575,6 +575,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.EXPANDED_DESKTOP_STYLE), false, this,
                     UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.Secure.IMMERSIVE_MODE_CONFIRMATIONS), false, this,
+                    UserHandle.USER_ALL);
             updateSettings();
         }
 
