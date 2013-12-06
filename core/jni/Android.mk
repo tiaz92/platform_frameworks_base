@@ -60,7 +60,6 @@ LOCAL_SRC_FILES:= \
 	android_text_AndroidCharacter.cpp \
 	android_text_AndroidBidi.cpp \
 	android_os_Debug.cpp \
-	android_os_FileUtils.cpp \
 	android_os_MemoryFile.cpp \
 	android_os_MessageQueue.cpp \
 	android_os_Parcel.cpp \
@@ -148,11 +147,6 @@ LOCAL_SRC_FILES:= \
 	android_content_res_Configuration.cpp \
 	android_animation_PropertyValuesHolder.cpp \
 	com_android_internal_net_NetworkStatsFactory.cpp
-
-ifeq ($(call is-vendor-board-platform,QCOM),true)
-LOCAL_SRC_FILES += com_android_internal_app_ActivityTrigger.cpp
-LOCAL_CFLAGS += -DQCOM_ACTIVITY_TRIGGER
-endif
 
 LOCAL_C_INCLUDES += \
 	$(JNI_H_INCLUDE) \
