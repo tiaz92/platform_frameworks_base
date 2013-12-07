@@ -117,9 +117,9 @@ public class NavigationBarView extends LinearLayout {
         @Override
         public void startTransition(LayoutTransition transition, ViewGroup container,
                 View view, int transitionType) {
-            if (view.getId() == R.id.back) {
+            if (view == findViewWithTag(NavbarEditor.NAVBAR_BACK)) {
                 mBackTransitioning = true;
-            } else if (view.getId() == R.id.home && transitionType == LayoutTransition.APPEARING) {
+            } else if (view ==  findViewWithTag(NavbarEditor.NAVBAR_HOME) && transitionType == LayoutTransition.APPEARING) {
                 mHomeAppearing = true;
                 mStartDelay = transition.getStartDelay(transitionType);
                 mDuration = transition.getDuration(transitionType);
@@ -130,9 +130,9 @@ public class NavigationBarView extends LinearLayout {
         @Override
         public void endTransition(LayoutTransition transition, ViewGroup container,
                 View view, int transitionType) {
-            if (view.getId() == R.id.back) {
+            if (view == findViewWithTag(NavbarEditor.NAVBAR_BACK)) {
                 mBackTransitioning = false;
-            } else if (view.getId() == R.id.home && transitionType == LayoutTransition.APPEARING) {
+            } else if (view ==  findViewWithTag(NavbarEditor.NAVBAR_HOME) && transitionType == LayoutTransition.APPEARING) {
                 mHomeAppearing = false;
             }
         }
@@ -140,10 +140,10 @@ public class NavigationBarView extends LinearLayout {
         public void onBackAltCleared() {
             // When dismissing ime during unlock, force the back button to run the same appearance
             // animation as home (if we catch this condition early enough).
-            if (!mBackTransitioning && getBackButton().getVisibility() == VISIBLE
-                    && mHomeAppearing && getHomeButton().getAlpha() == 0) {
-                getBackButton().setAlpha(0);
-                ValueAnimator a = ObjectAnimator.ofFloat(getBackButton(), "alpha", 0, 1);
+            if (!mBackTransitioning && findViewWithTag(NavbarEditor.NAVBAR_BACK).getVisibility() == VISIBLE
+                    && mHomeAppearing && findViewWithTag(NavbarEditor.NAVBAR_HOME).getAlpha() == 0) {
+                findViewWithTag(NavbarEditor.NAVBAR_BACK).setAlpha(0);
+                ValueAnimator a = ObjectAnimator.ofFloat(findViewWithTag(NavbarEditor.NAVBAR_BACK), "alpha", 0, 1);
                 a.setStartDelay(mStartDelay);
                 a.setDuration(mDuration);
                 a.setInterpolator(mInterpolator);
@@ -404,29 +404,11 @@ public class NavigationBarView extends LinearLayout {
 
         mNavigationIconHints = hints;
 
-        View button = mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_HOME);
-        if (button != null) {
-            button.setAlpha(
-                    (0 != (hints & StatusBarManager.NAVIGATION_HINT_HOME_NOP)) ? 0.5f : 1.0f);
-        }
-        button = mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_RECENT);
-        if (button != null) {
-            button.setAlpha(
-                    (0 != (hints & StatusBarManager.NAVIGATION_HINT_RECENT_NOP)) ? 0.5f : 1.0f);
-        }
-        button = mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_BACK);
-        if (button != null) {
-            button.setAlpha(
-                    (0 != (hints & StatusBarManager.NAVIGATION_HINT_BACK_NOP)) ? 0.5f : 1.0f);
-            ((ImageView)button).setImageDrawable(
-                    (0 != (hints & StatusBarManager.NAVIGATION_HINT_BACK_ALT))
-                    ? (mVertical ? mBackAltLandIcon : mBackAltIcon)
-                            : (mVertical ? mBackLandIcon : mBackIcon));
-        }
-        button = mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_RECENT);
-        if (button != null) {
-            ((ImageView) button).setImageDrawable(mVertical ? mRecentLandIcon : mRecentIcon);
-        }
+        ((ImageView)findViewWithTag(NavbarEditor.NAVBAR_BACK)).setImageDrawable(backAlt
+                ? (mVertical ? mBackAltLandIcon : mBackAltIcon)
+                : (mVertical ? mBackLandIcon : mBackIcon));
+
+        ((ImageView)findViewWithTag(NavbarEditor.NAVBAR_RECENT)).setImageDrawable(mVertical ? mRecentLandIcon : mRecentIcon);
 
         setDisabledFlags(mDisabledFlags, true);
     }
@@ -731,22 +713,12 @@ public class NavigationBarView extends LinearLayout {
                         mVertical ? "true" : "false",
                         mShowMenu ? "true" : "false"));
 
-        final View back = mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_BACK);
-        final View home = mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_HOME);
-        final View recent = mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_RECENT);
+        dumpButton(pw, "back", mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_BACK));
+        dumpButton(pw, "home", mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_HOME));
+        dumpButton(pw, "rcnt", mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_RECENT));
+        dumpButton(pw, "srch", getSearchLight());
+        dumpButton(pw, "cmra", getCameraButton());
 
-        pw.println("      back: "
-                + PhoneStatusBar.viewInfo(back)
-                + " " + visibilityToString(back.getVisibility())
-                );
-        pw.println("      home: "
-                + PhoneStatusBar.viewInfo(home)
-                + " " + visibilityToString(home.getVisibility())
-                );
-        pw.println("      rcnt: "
-                + PhoneStatusBar.viewInfo(recent)
-                + " " + visibilityToString(recent.getVisibility())
-                );
         pw.println("    }");
     }
 
