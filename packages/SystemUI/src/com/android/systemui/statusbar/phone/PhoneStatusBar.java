@@ -951,7 +951,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode {
 
     private void prepareNavigationBarView() {
         mNavigationBarView.reorient();
-
         mNavigationBarView.setListeners(mRecentsClickListener,
                 mRecentsPreloadOnTouchListener, mHomeSearchActionListener);
         updateSearchPanel();
@@ -2635,7 +2634,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode {
 
         makeStatusBarView();
         mWindowManager.addView(mStatusBarWindow, lp);
-        mNavigationBarView.updateResources();
     }
 
     void setNotificationIconVisibility(boolean visible, int anim) {
