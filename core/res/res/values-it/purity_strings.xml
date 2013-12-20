@@ -31,4 +31,5 @@
     <string name="reboot_system" product="tablet">Riavvia tablet</string>
     <string name="reboot_system" product="default">Riavvia telefono</string>
     <string name="global_action_screenshot">Cattura schermata</string>
+    <string name="immersive_mode_confirmation_bottom">Swype dal basso verso l\'alto per uscire dalla modalità fullscreeen</string>
 </resources>
