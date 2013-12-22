@@ -31,4 +31,5 @@
     <string name="reboot_confirm" product="tablet">El tablet se reiniciará.</string>
     <string name="reboot_confirm" product="default">El teléfono se reiniciará.</string>
     <string name="global_action_reboot">Reiniciar</string>
+    <string name="immersive_mode_confirmation_bottom">Deslizar hacia arriba desde abajo para salir de pantalla completa.</string>
 </resources>
