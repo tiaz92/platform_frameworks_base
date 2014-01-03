@@ -443,6 +443,8 @@ public class AudioService extends IAudioService.Stub {
 
     private int mDockState = Intent.EXTRA_DOCK_STATE_UNDOCKED;
 
+    private boolean mVolumeKeysControlMediaStream;
+
     // Used when safe volume warning message display is requested by setStreamVolume(). In this
     // case, the new requested volume, stream type and device are stored in mPendingVolumeCommand
     // and used later when/if disableSafeMediaVolume() is called.
@@ -736,6 +738,9 @@ public class AudioService extends IAudioService.Stub {
             updateRingerModeAffectedStreams();
             readDockAudioSettings(cr);
             mSafeVolumeEnabled = new Boolean(safeVolumeEnabled(cr));
+
+            mVolumeKeysControlMediaStream = Settings.System.getIntForUser(cr,
+                    Settings.System.VOLUME_KEYS_CONTROL_MEDIA_STREAM, 0, UserHandle.USER_CURRENT) == 1;
         }
 
         mLinkNotificationWithVolume = Settings.System.getIntForUser(cr,
@@ -2706,9 +2711,15 @@ public class AudioService extends IAudioService.Stub {
                             Log.v(TAG, "getActiveStreamType: Forcing STREAM_REMOTE_MUSIC");
                         return STREAM_REMOTE_MUSIC;
                     } else {
-                        if (DEBUG_VOL)
-                            Log.v(TAG, "getActiveStreamType: Forcing STREAM_RING b/c default");
-                        return AudioSystem.STREAM_RING;
+                        if (mVolumeKeysControlMediaStream) {
+                            if (DEBUG_VOL)
+                                Log.v(TAG, "getActiveStreamType: Forcing STREAM_MUSIC b/c default setting");
+                            return AudioSystem.STREAM_MUSIC;
+                        } else {
+                            if (DEBUG_VOL)
+                                Log.v(TAG, "getActiveStreamType: Forcing STREAM_RING b/c default");
+                             return AudioSystem.STREAM_RING;
+                        }
                 }
             } else if (isAfMusicActiveRecently(0)) {
                 if (DEBUG_VOL)
@@ -3755,6 +3766,8 @@ public class AudioService extends IAudioService.Stub {
             mContentResolver.registerContentObserver(Settings.System.getUriFor(
                 Settings.System.VOLUME_LINK_NOTIFICATION), false, this,
                 UserHandle.USER_ALL);
+            mContentResolver.registerContentObserver(Settings.System.getUriFor(
+                Settings.System.VOLUME_KEYS_CONTROL_MEDIA_STREAM), false, this);
         }
 
         @Override
@@ -3806,6 +3819,10 @@ public class AudioService extends IAudioService.Stub {
 
                 } else if (uri.equals(Settings.System.getUriFor(Settings.System.SAFE_HEADSET_VOLUME))) {
                     mSafeVolumeEnabled = safeVolumeEnabled(mContentResolver);
+                } else if (uri.equals(Settings.System.getUriFor(Settings.System.VOLUME_KEYS_CONTROL_MEDIA_STREAM))) {
+                    mVolumeKeysControlMediaStream = Settings.System.getIntForUser(mContentResolver,
+                            Settings.System.VOLUME_KEYS_CONTROL_MEDIA_STREAM, 0,
+                            UserHandle.USER_CURRENT) == 1;
                 }
             }
         }
