@@ -69,8 +69,4 @@ public class QSUtils {
         public static boolean deviceSupportsTorch(Context context) {
             return context.getResources().getBoolean(com.android.internal.R.bool.config_enableTorch);
         }
-
-        public static boolean adbEnabled(ContentResolver resolver) {
-            return (Settings.Global.getInt(resolver, Settings.Global.ADB_ENABLED, 0)) == 1;
-        }
 }
