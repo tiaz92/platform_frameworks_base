@@ -65,4 +65,6 @@
     <string name="navbar_menu_always_button">Pulsante Menu (fisso)</string>
     <string name="navbar_menu_big_button">Pulsante Menu</string>
     <string name="screenshot_notification_delete">Elimina</string>
+    <string name="quick_settings_power">Spegnimento</string>
+    <string name="screenshot_delete_confirmation">Screenshot cancellato.</string>
 </resources>

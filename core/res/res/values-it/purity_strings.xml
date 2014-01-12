@@ -31,5 +31,7 @@
     <string name="reboot_system" product="tablet">Riavvia tablet</string>
     <string name="reboot_system" product="default">Riavvia telefono</string>
     <string name="global_action_screenshot">Cattura schermata</string>
-    <string name="immersive_mode_confirmation_bottom">Swype dal basso verso l\'alto per uscire dalla modalità fullscreeen</string>
+    <string name="permlab_resetBatteryStats">reimposta statistiche batteria</string>
+    <string name="permdesc_resetBatteryStats">Consente all\'applicazione di reimpostare i dati di utilizzo della batteria a basso livello.</string>
+    <string name="immersive_mode_confirmation_bottom">Scorrere dal basso verso l\'alto per uscire dalla modalità schermo intero.</string>
 </resources>
