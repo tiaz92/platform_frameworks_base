@@ -28,6 +28,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.ContentObserver;
+import android.graphics.Color;
 import android.os.BatteryManager;
 import android.os.BatteryProperties;
 import android.os.Binder;
